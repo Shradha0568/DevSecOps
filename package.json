@@ -1,0 +1,12 @@
+{
+  "name": "netflix-ui-clone",
+  "version": "1.0.0",
+  "description": "Static Netflix UI served by Express for DevSecOps demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0"
+  }
+}
