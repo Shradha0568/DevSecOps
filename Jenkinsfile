@@ -17,7 +17,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         sh """
-          docker build -t $IMAGE:$TAG .
+          docker build -t $IMAGE:$TAG -f DevSecOps/Dockerfile DevSecOps
         """
       }
     }
