@@ -16,11 +16,9 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        dir('DevSecOps') {
           sh """
             docker build -t shradha91103/netflix-ui-clone:${BUILD_NUMBER} .
           """
-        }
       }
     }
 
