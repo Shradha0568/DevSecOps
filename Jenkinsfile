@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   environment {
-    IMAGE = "shradha91103/netflix-ui-clone"
-    TAG = "${BUILD_NUMBER}"
+    IMAGE_NAME = "shradha91103/netflix-ui-clone"
+    IMAGE_TAG = "${BUILD_NUMBER}"
   }
 
   stages {
@@ -16,45 +16,28 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-          sh """
-            docker build -t shradha91103/netflix-ui-clone:${BUILD_NUMBER} .
-          """
+        sh '''
+          docker build -t $IMAGE_NAME:$IMAGE_TAG DevSecOps
+        '''
       }
     }
 
     stage('Security Scan - Trivy') {
       steps {
-        sh """
-          trivy image --severity HIGH,CRITICAL $IMAGE:$TAG || true
-        """
+        sh '''
+          trivy image $IMAGE_NAME:$IMAGE_TAG || true
+        '''
       }
     }
 
     stage('Push Image to DockerHub') {
       steps {
-        withCredentials([usernamePassword(
-          credentialsId: 'dockerhub-creds',
-          usernameVariable: 'USER',
-          passwordVariable: 'PASS'
-        )]) {
-          sh """
-            echo $PASS | docker login -u $USER --password-stdin
-            docker push $IMAGE:$TAG
-          """
+        withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
+          sh '''
+            echo $DOCKER_PASS | docker login -u shradha91103 --password-stdin
+            docker push $IMAGE_NAME:$IMAGE_TAG
+          '''
         }
-      }
-    }
-
-    stage('Update Helm Chart') {
-      steps {
-        sh """
-          sed -i 's/tag:.*/tag: $TAG/' helm-chart/values.yaml
-          git config user.email "jenkins@local"
-          git config user.name "jenkins"
-
-          git commit -am "ci: update image tag to $TAG" || echo "No changes"
-          git push origin main
-        """
       }
     }
   }
