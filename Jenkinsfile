@@ -18,7 +18,7 @@ pipeline {
       steps {
         dir('DevSecOps') {
           sh """
-            docker build -t $IMAGE:$TAG .
+            docker build -t shradha91103/netflix-ui-clone:${BUILD_NUMBER} .
           """
         }
       }
@@ -53,6 +53,7 @@ pipeline {
           sed -i 's/tag:.*/tag: $TAG/' helm-chart/values.yaml
           git config user.email "jenkins@local"
           git config user.name "jenkins"
+
           git commit -am "ci: update image tag to $TAG" || echo "No changes"
           git push origin main
         """
