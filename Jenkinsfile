@@ -16,9 +16,11 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh """
-          docker build -t $IMAGE:$TAG .
-        """
+        dir('DevSecOps') {
+          sh """
+            docker build -t $IMAGE:$TAG .
+          """
+        }
       }
     }
 
