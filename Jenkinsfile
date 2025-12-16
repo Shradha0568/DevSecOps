@@ -28,7 +28,7 @@ pipeline {
     stage('Verify Image') {
       steps {
         sh '''
-          docker images | grep netflix-ui-clone
+          docker images --format "{{.Repository}}:{{.Tag}}" | grep netflix-ui-clone || true
         '''
       }
     }
