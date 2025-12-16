@@ -20,7 +20,7 @@ pipeline {
           docker build --no-cache \
             -t $IMAGE_NAME:$IMAGE_TAG \
             -t $IMAGE_NAME:latest \
-            DevSecOps
+            .
         '''
       }
     }
