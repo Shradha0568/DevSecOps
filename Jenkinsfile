@@ -17,7 +17,18 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         sh '''
-          docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest DevSecOps
+          docker build --no-cache \
+            -t $IMAGE_NAME:$IMAGE_TAG \
+            -t $IMAGE_NAME:latest \
+            DevSecOps
+        '''
+      }
+    }
+
+    stage('Verify Image') {
+      steps {
+        sh '''
+          docker images | grep netflix-ui-clone
         '''
       }
     }
@@ -54,9 +65,7 @@ pipeline {
 
   post {
     always {
-      sh '''
-        docker image prune -f
-      '''
+      sh 'docker image prune -f'
     }
   }
 }
