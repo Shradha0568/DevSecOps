@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     IMAGE_NAME = "shradha91103/netflix-ui-clone"
-    IMAGE_TAG = "${BUILD_NUMBER}"
+    IMAGE_TAG  = "${BUILD_NUMBER}"
   }
 
   stages {
@@ -17,7 +17,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         sh '''
-          docker build -t $IMAGE_NAME:$IMAGE_TAG DevSecOps
+          docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest DevSecOps
         '''
       }
     }
@@ -32,13 +32,31 @@ pipeline {
 
     stage('Push Image to DockerHub') {
       steps {
-        withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'dockerhub-creds',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+          )
+        ]) {
           sh '''
-            echo $DOCKER_PASS | docker login -u shradha91103 --password-stdin
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+
             docker push $IMAGE_NAME:$IMAGE_TAG
+            docker push $IMAGE_NAME:latest
+
+            docker logout
           '''
         }
       }
+    }
+  }
+
+  post {
+    always {
+      sh '''
+        docker image prune -f
+      '''
     }
   }
 }
